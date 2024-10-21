@@ -47,7 +47,25 @@
       <QPageContainer>
         <QPage class="main">
           <div class="character-items-container">
-            <span class="text-h6 q-py-md">サンプルボイス一覧</span>
+            <span class="text-h6 q-py-md">サンプルボイス一覧
+              &nbsp;
+              <QBtn
+                label="トーク"
+                color="toolbar-button"
+                textColor="toolbar-button-display"
+                class="text-no-wrap"
+                @click="closeDialog"    
+              />
+              &nbsp;
+              <QBtn
+                label="ソング"
+                color="toolbar-button"
+                textColor="toolbar-button-display"
+                class="text-no-wrap"
+                @click="closeDialog"
+              />
+            </span>
+            
             <div>
               <CharacterTryListenCard
                 v-for="characterInfo of characterInfos"

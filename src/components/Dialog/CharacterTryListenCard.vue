@@ -20,7 +20,28 @@
       />
       <span class="text-subtitle1 q-ma-sm">{{
         characterInfo.metas.speakerName
+        
       }}</span>
+      <div class="button-container">
+      <QBtn
+        label="ト"
+        color="toolbar-button"
+        textColor="toolbar-button-display"
+        class="text-no-wrap btn-inline"
+        @click="
+          selectCharacter(speakerUuid);
+          rollStyleIndex2(speakerUuid, -1);"
+      />
+      <QBtn
+        label="ソ"
+        color="toolbar-button"
+        textColor="toolbar-button-display"
+        class="text-no-wrap btn-inline"
+        @click="
+          selectCharacter(speakerUuid);
+          rollStyleIndex3(speakerUuid, 1);"
+      />
+    </div>
       <div
         v-if="characterInfo.metas.styles.length > 1"
         class="style-select-container"
@@ -157,6 +178,30 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
   props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
   updatePortrait();
 };
+const rollStyleIndex2 = (speakerUuid: SpeakerId, diff: number) => {
+  // 0 <= index <= length に収める
+  const length = props.characterInfo.metas.styles.length;
+
+  let styleIndex = 0;
+  styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
+  selectedStyleIndex.value = styleIndex;
+
+  // 音声を再生する。同じstyleIndexだったら停止する。
+  props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
+  updatePortrait();
+};
+const rollStyleIndex3 = (speakerUuid: SpeakerId, diff: number) => {
+  // 0 <= index <= length に収める
+  const length = props.characterInfo.metas.styles.length;
+
+  let styleIndex = length - 1;
+  styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
+  selectedStyleIndex.value = styleIndex;
+
+  // 音声を再生する。同じstyleIndexだったら停止する。
+  props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
+  updatePortrait();
+};
 </script>
 
 <style scoped lang="scss">
@@ -183,6 +228,17 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
     align-items: center;
     width: 100%;
     height: 100%;
+    // ボタンを横並びにするためのスタイル
+    .btn-inline {
+    display: inline-block;  // インライン表示
+    margin-right: 5px;  // ボタン間の余白を調整
+    }
+    // ボタンを囲む要素に対しても横並びの設定を確認
+    .button-container {
+      display: flex;  // フレックスボックスを使って横並びにする
+      justify-content: center;  // ボタンを中央揃えにする
+      width: 100%;  // 必要に応じて幅を指定
+    }
     .style-icon {
       $icon-size: calc(vars.$character-item-size / 2);
       width: $icon-size;
@@ -194,7 +250,6 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
       flex-direction: row;
       justify-content: center;
       align-items: center;
-      margin-top: -1rem;
     }
     .voice-samples {
       display: flex;

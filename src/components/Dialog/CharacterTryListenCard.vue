@@ -116,7 +116,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { CharacterInfo, SpeakerId, StyleId, StyleInfo } from "@/type/preload";
-import { DEFAULT_STYLE_NAME } from "@/store/utility";
+import { DEFAULT_STYLE_NAME, isSingingStyle } from "@/store/utility";
 
 const props = defineProps<{
   characterInfo: CharacterInfo;
@@ -178,6 +178,7 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
   props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
   updatePortrait();
 };
+
 const rollStyleIndex2 = (speakerUuid: SpeakerId, diff: number) => {
   // 0 <= index <= length に収める
   const length = props.characterInfo.metas.styles.length;
@@ -190,11 +191,20 @@ const rollStyleIndex2 = (speakerUuid: SpeakerId, diff: number) => {
   props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
   updatePortrait();
 };
+
 const rollStyleIndex3 = (speakerUuid: SpeakerId, diff: number) => {
   // 0 <= index <= length に収める
   const length = props.characterInfo.metas.styles.length;
 
-  let styleIndex = length - 1;
+  let styleIndex = 0;
+  while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+    styleIndex++;
+    if(styleIndex > length-1) {
+      styleIndex = 0;
+      break;
+    }
+  }
+  
   styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
   selectedStyleIndex.value = styleIndex;
 

@@ -64,6 +64,9 @@
                 class="text-no-wrap"
                 @click="changeMode(1);"
               />
+              &nbsp;
+              <span v-if="modeNumber === 0">現在のモード: トーク</span>
+              <span v-else-if="modeNumber === 1">現在のモード: ソング</span>
             </span>
             
             <div>

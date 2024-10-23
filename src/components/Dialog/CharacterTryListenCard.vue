@@ -18,30 +18,29 @@
         :alt="characterInfo.metas.speakerName"
         class="style-icon"
       />
-      <span class="text-subtitle1 q-ma-sm">{{
-        characterInfo.metas.speakerName
-        
-      }}</span>
+      <span class="text-subtitle1 q-ma-sm">{{ characterInfo.metas.speakerName }}</span>
       <div class="button-container">
-      <QBtn
-        label="ト"
-        color="toolbar-button"
-        textColor="toolbar-button-display"
-        class="text-no-wrap btn-inline"
-        @click="
-          selectCharacter(speakerUuid);
-          rollStyleIndex2(speakerUuid, -1);"
-      />
-      <QBtn
-        label="ソ"
-        color="toolbar-button"
-        textColor="toolbar-button-display"
-        class="text-no-wrap btn-inline"
-        @click="
-          selectCharacter(speakerUuid);
-          rollStyleIndex3(speakerUuid, 1);"
-      />
-    </div>
+        <QBtn
+          label="ト"
+          color="toolbar-button"
+          textColor="toolbar-button-display"
+          class="text-no-wrap btn-inline"
+          @click="
+            selectCharacter(speakerUuid);
+            rollStyleIndex(speakerUuid, -1);
+          "
+        />
+        <QBtn
+          label="ソ"
+          color="toolbar-button"
+          textColor="toolbar-button-display"
+          class="text-no-wrap btn-inline"
+          @click="
+            selectCharacter(speakerUuid);
+            rollStyleIndex3(speakerUuid, 1);
+          "
+        />
+      </div>
       <div
         v-if="characterInfo.metas.styles.length > 1"
         class="style-select-container"
@@ -60,9 +59,7 @@
             rollStyleIndex(speakerUuid, -1);
           "
         />
-        <span aria-live="polite">{{
-          selectedStyle.styleName || DEFAULT_STYLE_NAME
-        }}</span>
+        <span aria-live="polite">{{ selectedStyle.styleName || DEFAULT_STYLE_NAME }}</span>
         <QBtn
           flat
           dense
@@ -103,21 +100,27 @@
           "
         />
       </div>
-      <div
-        v-if="isNewCharacter"
-        class="new-character-item q-pa-sm text-weight-bold"
-      >
+      <div v-if="isNewCharacter" class="new-character-item q-pa-sm text-weight-bold">
         NEW!
       </div>
     </div>
-  </QItem>
+  </QItem>  
 </template>
 
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { CharacterInfo, SpeakerId, StyleId, StyleInfo } from "@/type/preload";
 import { DEFAULT_STYLE_NAME, isSingingStyle } from "@/store/utility";
+import { defineProps, defineEmits } from 'vue';
+import CharacterOrderDialog from "./CharacterOrderDialog.vue";
 
+// 親コンポーネントの "mode" を扱う
+const mode = ref(0);
+function updateMode(newMode: number) {
+  mode.value = newMode;
+}
+
+// props と emits の定義
 const props = defineProps<{
   characterInfo: CharacterInfo;
   isSelected: boolean;
@@ -139,8 +142,7 @@ const emit = defineEmits<{
   (event: "update:portrait", portrait: string): void;
 }>();
 
-// キャラクター枠のホバー状態を表示するかどうか
-// 再生ボタンなどにカーソルがある場合はキャラクター枠のホバーUIを表示しないようにするため
+// キャラクター枠のホバー状態管理
 const isHoverableItem = ref(true);
 
 const selectCharacter = (speakerUuid: SpeakerId) => {
@@ -157,58 +159,66 @@ const updatePortrait = () => {
   emit("update:portrait", portraitPath);
 };
 
+// speakerUuid と selectedStyle の管理
 const speakerUuid = computed(() => props.characterInfo.metas.speakerUuid);
-
-// 選択中のスタイル
 const selectedStyleIndex = ref<number>(0);
-const selectedStyle = computed(
-  () => props.characterInfo.metas.styles[selectedStyleIndex.value],
-);
+const selectedStyle = computed(() => props.characterInfo.metas.styles[selectedStyleIndex.value]);
 
-// スタイル番号をずらす
+// スタイル番号を変更する関数
 const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
-  // 0 <= index <= length に収める
-  const length = props.characterInfo.metas.styles.length;
-
-  let styleIndex = selectedStyleIndex.value + diff;
-  styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
-  selectedStyleIndex.value = styleIndex;
-
-  // 音声を再生する。同じstyleIndexだったら停止する。
-  props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
-  updatePortrait();
-};
-
-const rollStyleIndex2 = (speakerUuid: SpeakerId, diff: number) => {
-  // 0 <= index <= length に収める
-  const length = props.characterInfo.metas.styles.length;
-
   let styleIndex = 0;
+  const length = props.characterInfo.metas.styles.length;
+  if (mode.value == 0) {
+    console.log("今はmodeが0です")
+    styleIndex = selectedStyleIndex.value + diff;
+    if (styleIndex < 0) {
+      styleIndex = length - 1;
+      while (isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+        styleIndex--;
+      }
+    } else {
+      if (isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+        styleIndex = 0;
+      }
+    }
+  } else {
+    console.log("今はmodeが1です");
+    styleIndex = selectedStyleIndex.value + diff;
+    if (styleIndex >= length) {
+      styleIndex = 0;
+      while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+        styleIndex++;
+        if (styleIndex = length) {
+          styleIndex = length - 1;
+          break;
+        }
+      }
+    } else {
+      if (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+        styleIndex = length - 1;
+      }
+    }
+    
+    
+  }
   styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
   selectedStyleIndex.value = styleIndex;
-
-  // 音声を再生する。同じstyleIndexだったら停止する。
   props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
   updatePortrait();
 };
+
 
 const rollStyleIndex3 = (speakerUuid: SpeakerId, diff: number) => {
-  // 0 <= index <= length に収める
   const length = props.characterInfo.metas.styles.length;
-
   let styleIndex = 0;
   while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
     styleIndex++;
-    if(styleIndex > length-1) {
+    if (styleIndex > length - 1) {
       styleIndex = 0;
       break;
     }
   }
-  
-  styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
   selectedStyleIndex.value = styleIndex;
-
-  // 音声を再生する。同じstyleIndexだったら停止する。
   props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
   updatePortrait();
 };
@@ -238,16 +248,14 @@ const rollStyleIndex3 = (speakerUuid: SpeakerId, diff: number) => {
     align-items: center;
     width: 100%;
     height: 100%;
-    // ボタンを横並びにするためのスタイル
     .btn-inline {
-    display: inline-block;  // インライン表示
-    margin-right: 5px;  // ボタン間の余白を調整
+      display: inline-block;
+      margin-right: 5px;
     }
-    // ボタンを囲む要素に対しても横並びの設定を確認
     .button-container {
-      display: flex;  // フレックスボックスを使って横並びにする
-      justify-content: center;  // ボタンを中央揃えにする
-      width: 100%;  // 必要に応じて幅を指定
+      display: flex;
+      justify-content: center;
+      width: 100%;
     }
     .style-icon {
       $icon-size: calc(vars.$character-item-size / 2);

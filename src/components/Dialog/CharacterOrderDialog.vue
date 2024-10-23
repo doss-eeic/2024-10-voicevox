@@ -47,7 +47,24 @@
       <QPageContainer>
         <QPage class="main">
           <div class="character-items-container">
-            <span class="text-h6 q-py-md">サンプルボイス一覧</span>
+            <span class="text-h6 q-py-md">サンプルボイス一覧
+              &nbsp;
+              <QBtn
+                label="トーク"
+                color="toolbar-button"
+                textColor="toolbar-button-display"
+                class="text-no-wrap"
+                @click="changeMode(0);"    
+              />
+              &nbsp;
+              <QBtn
+                label="ソング"
+                color="toolbar-button"
+                textColor="toolbar-button-display"
+                class="text-no-wrap"
+                @click="changeMode(1);"
+              />
+            </span>
             
             <div>
               <CharacterTryListenCard
@@ -113,13 +130,21 @@ import CharacterTryListenCard from "./CharacterTryListenCard.vue";
 import { useStore } from "@/store";
 import { CharacterInfo, SpeakerId, StyleId, StyleInfo } from "@/type/preload";
 
+function changeMode(newMode: number) {
+  console.log("newModeは" + newMode);
+  emit('update:mode', newMode);
+}
+
+
 const props = defineProps<{
   modelValue: boolean;
   characterInfos: CharacterInfo[];
+  mode: number;
 }>();
 
 const emit = defineEmits<{
   (event: "update:modelValue", value: boolean): void;
+  (event: "update:mode", value: number): void;
 }>();
 
 const $q = useQuasar();

@@ -207,8 +207,9 @@
 import { computed, ref } from "vue";
 import AudioAccent from "./AudioAccent.vue";
 import AudioParameter from "./AudioParameter.vue";
-import { MenuItemButton } from "@/components/Menu/type";
-import ContextMenu from "@/components/Menu/ContextMenu.vue";
+import ContextMenu, {
+  ContextMenuItemData,
+} from "@/components/Menu/ContextMenu.vue";
 import { useStore } from "@/store";
 import { AudioKey, MoraDataType } from "@/type/preload";
 import { Mora } from "@/openapi/models/Mora";
@@ -240,19 +241,31 @@ const store = useStore();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
 
-const contextMenudata = ref<[MenuItemButton]>([
-  {
-    type: "button",
-    label: "削除",
-    onClick: () => {
-      void store.actions.COMMAND_DELETE_ACCENT_PHRASE({
-        audioKey: props.audioKey,
-        accentPhraseIndex: props.index,
-      });
+const contextMenudata = computed<ContextMenuItemData[]>(() => {
+  return [
+    {
+      type: "button",
+      label: "削除",
+      onClick: () => {
+        void store.actions.COMMAND_DELETE_ACCENT_PHRASE({
+          audioKey: props.audioKey,
+          accentPhraseIndex: props.index,
+        });
+      },
+      disableWhenUiLocked: true,
     },
-    disableWhenUiLocked: true,
-  },
-]);
+    {
+      type: "button",
+      label: "リセット",
+      onClick: () => {
+        void store.actions.COMMAND_MULTI_RESET_MORA_PITCH_AND_LENGTH({
+          audioKeys: [props.audioKey],
+        });
+      },
+      disableWhenUiLocked: true,
+    },
+  ];
+});
 
 const pronunciation = computed(() => {
   let textString = props.accentPhrase.moras.map((mora) => mora.text).join("");

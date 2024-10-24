@@ -185,16 +185,25 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
       while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
         styleIndex++;
         console.log("check", styleIndex);
-
+        if (styleIndex == length) {
+          console.log("check4", styleIndex);
+          styleIndex = length - 1;
+          break;
+        }
       }
       console.log("check2", styleIndex);
     } else {
       if (styleIndex == -1) {
-        styleIndex = 0;
+        styleIndex = length - 1;
       }
       while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
         styleIndex++;
         console.log("check", styleIndex);
+        if (styleIndex == length) {
+          console.log("check4", styleIndex);
+          styleIndex = length - 1;
+          break;
+        }
       }
     }
     console.log("check3",styleIndex);
@@ -224,7 +233,7 @@ const rollStyleIndex3 = (speakerUuid: SpeakerId) => {
     styleIndex = 0;
     while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
       styleIndex++;
-      if (styleIndex = length) {
+      if (styleIndex == length) {
         styleIndex = length - 1;
         break;
       }

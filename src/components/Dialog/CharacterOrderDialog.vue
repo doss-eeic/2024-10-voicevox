@@ -77,6 +77,7 @@
                 :isNewCharacter="
                   newCharacters.includes(characterInfo.metas.speakerUuid)
                 "
+                :mode="modeNumber"
                 :playing
                 :togglePlayOrStop
                 @update:portrait="updatePortrait"
@@ -132,19 +133,18 @@ import { CharacterInfo, SpeakerId, StyleId, StyleInfo } from "@/type/preload";
 
 function changeMode(newMode: number) {
   console.log("newModeは" + newMode);
-  emit('update:mode', newMode);
+  modeNumber.value = newMode;
 }
 
+const modeNumber = ref<number>(0);
 
 const props = defineProps<{
   modelValue: boolean;
   characterInfos: CharacterInfo[];
-  mode: number;
 }>();
 
 const emit = defineEmits<{
   (event: "update:modelValue", value: boolean): void;
-  (event: "update:mode", value: number): void;
 }>();
 
 const $q = useQuasar();

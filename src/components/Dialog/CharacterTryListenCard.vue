@@ -37,7 +37,7 @@
           class="text-no-wrap btn-inline"
           @click="
             selectCharacter(speakerUuid);
-            rollStyleIndex3(speakerUuid, 1);
+            rollStyleIndex(speakerUuid, 1);
           "
         />
       </div>
@@ -108,23 +108,17 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { CharacterInfo, SpeakerId, StyleId, StyleInfo } from "@/type/preload";
 import { DEFAULT_STYLE_NAME, isSingingStyle } from "@/store/utility";
 import { defineProps, defineEmits } from 'vue';
-import CharacterOrderDialog from "./CharacterOrderDialog.vue";
-
-// 親コンポーネントの "mode" を扱う
-const mode = ref(0);
-function updateMode(newMode: number) {
-  mode.value = newMode;
-}
 
 // props と emits の定義
 const props = defineProps<{
   characterInfo: CharacterInfo;
   isSelected: boolean;
   isNewCharacter?: boolean;
+  mode: number;
   playing?: {
     speakerUuid: SpeakerId;
     styleId: StyleId;
@@ -136,6 +130,8 @@ const props = defineProps<{
     index: number,
   ) => void;
 }>();
+
+watch(props.mode.valueOf, () => {rollStyleIndex2});
 
 const emit = defineEmits<{
   (event: "update:selectCharacter", speakerUuid: SpeakerId): void;
@@ -168,7 +164,7 @@ const selectedStyle = computed(() => props.characterInfo.metas.styles[selectedSt
 const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
   let styleIndex = 0;
   const length = props.characterInfo.metas.styles.length;
-  if (mode.value == 0) {
+  if (props.mode == 0) {
     console.log("今はmodeが0です")
     styleIndex = selectedStyleIndex.value + diff;
     if (styleIndex < 0) {
@@ -182,23 +178,26 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
       }
     }
   } else {
-    console.log("今はmodeが1です");
     styleIndex = selectedStyleIndex.value + diff;
+    console.log(styleIndex, length);
     if (styleIndex >= length) {
       styleIndex = 0;
       while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
         styleIndex++;
-        if (styleIndex = length) {
-          styleIndex = length - 1;
-          break;
-        }
+        console.log("check", styleIndex);
+
       }
+      console.log("check2", styleIndex);
     } else {
-      if (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
-        styleIndex = length - 1;
+      if (styleIndex == -1) {
+        styleIndex = 0;
+      }
+      while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+        styleIndex++;
+        console.log("check", styleIndex);
       }
     }
-    
+    console.log("check3",styleIndex);
     
   }
   styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
@@ -208,18 +207,31 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
 };
 
 
-const rollStyleIndex3 = (speakerUuid: SpeakerId, diff: number) => {
-  const length = props.characterInfo.metas.styles.length;
+const rollStyleIndex2 = (characterInfos: CharacterInfo[]) => {
+  characterInfos.forEach((characterInfo) => {
+    const speakerUuid = characterInfo.metas.speakerUuid;
+    rollStyleIndex3(speakerUuid);
+  });
+};
+
+const rollStyleIndex3 = (speakerUuid: SpeakerId) => {
   let styleIndex = 0;
-  while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
-    styleIndex++;
-    if (styleIndex > length - 1) {
-      styleIndex = 0;
-      break;
+  const length = props.characterInfo.metas.styles.length;
+  if (props.mode == 0) {
+    console.log("今はmodeが0です")
+  } else {
+    console.log("今はmodeが1です");
+    styleIndex = 0;
+    while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
+      styleIndex++;
+      if (styleIndex = length) {
+        styleIndex = length - 1;
+        break;
+      }
     }
   }
+  styleIndex = styleIndex < 0 ? length - 1 : styleIndex % length;
   selectedStyleIndex.value = styleIndex;
-  props.togglePlayOrStop(speakerUuid, selectedStyle.value, 0);
   updatePortrait();
 };
 </script>

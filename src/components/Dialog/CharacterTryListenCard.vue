@@ -97,6 +97,7 @@
           @mouseenter="isHoverableItem = false"
           @mouseleave="isHoverableItem = true"
           @click.stop="
+            rollStyleIndex3(speakerUuid);
             selectCharacter(speakerUuid);
             togglePlayOrStop(speakerUuid, selectedStyle, voiceSampleIndex);
           "

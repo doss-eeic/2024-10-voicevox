@@ -20,6 +20,7 @@
       />
       <span class="text-subtitle1 q-ma-sm">{{ characterInfo.metas.speakerName }}</span>
       <div class="button-container">
+        <!--
         <QBtn
           label="ト"
           color="toolbar-button"
@@ -40,6 +41,7 @@
             rollStyleIndex(speakerUuid, 1);
           "
         />
+        -->
       </div>
       <div
         v-if="characterInfo.metas.styles.length > 1"
@@ -283,6 +285,9 @@ const rollStyleIndex3 = (speakerUuid: SpeakerId) => {
       width: $icon-size;
       height: $icon-size;
       border-radius: 5px;
+    }
+    .text-subtitle1 {
+      margin-bottom: -5px;  // ここで隙間を調整
     }
     .style-select-container {
       display: flex;

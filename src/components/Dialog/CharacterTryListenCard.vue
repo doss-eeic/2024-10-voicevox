@@ -8,6 +8,7 @@
       isSelected && 'selected-character-item',
     ]"
     @click="
+      rollStyleIndex3(speakerUuid);
       selectCharacter(speakerUuid);
       togglePlayOrStop(speakerUuid, selectedStyle, 0);
     "
@@ -134,7 +135,10 @@ const props = defineProps<{
   ) => void;
 }>();
 
-watch(props.mode.valueOf, () => {rollStyleIndex2});
+watch(() => props.mode, (newMode, oldMode) => {
+  rollStyleIndex3(speakerUuid.value);
+});
+
 
 const emit = defineEmits<{
   (event: "update:selectCharacter", speakerUuid: SpeakerId): void;

@@ -405,6 +405,15 @@ export type AudioStoreTypes = {
     }): Promise<AccentPhrase[]>;
   };
 
+  FETCH_AND_COPY_MORA_DATA_ONLYPITCH: {
+    action(payload: {
+      accentPhrases: AccentPhrase[];
+      engineId: EngineId;
+      styleId: StyleId;
+    }): Promise<AccentPhrase[]>;
+  };
+
+
   DEFAULT_PROJECT_FILE_BASE_NAME: {
     getter: string;
   };
@@ -580,6 +589,11 @@ export type AudioCommandStoreTypes = {
   COMMAND_MULTI_RESET_MORA_ONLYLENGTH: {
     action(payload: { audioKeys: AudioKey[] }): void;
   };
+
+  COMMAND_MULTI_RESET_MORA_ONLYPITCH: {
+    action(payload: { audioKeys: AudioKey[] }): void;
+  };
+
 
 
   COMMAND_RESET_SELECTED_MORA_PITCH_AND_LENGTH: {

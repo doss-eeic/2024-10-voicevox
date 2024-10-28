@@ -274,6 +274,16 @@ const contextMenudata = computed<ContextMenuItemData[]>(() => {
       },
       disableWhenUiLocked: true,
     },
+    {
+      type: "button",
+      label: "ピッチのみリセット",
+      onClick: () => {
+        void store.actions.COMMAND_MULTI_RESET_MORA_ONLYPITCH({
+          audioKeys: [props.audioKey],
+        });
+      },
+      disableWhenUiLocked: true,
+    },
   ];
 });
 

@@ -257,16 +257,6 @@ const contextMenudata_accent = computed<ContextMenuItemData[]>(() => {
       },
       disableWhenUiLocked: true,
     },
-    {
-      type: "button",
-      label: "リセット",
-      onClick: () => {
-        void store.actions.COMMAND_MULTI_RESET_MORA_ONLYPITCH({
-          audioKeys: [props.audioKey],
-        });
-      },
-      disableWhenUiLocked: true,
-    },
   ];
 });
 

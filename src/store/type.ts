@@ -413,7 +413,6 @@ export type AudioStoreTypes = {
     }): Promise<AccentPhrase[]>;
   };
 
-
   DEFAULT_PROJECT_FILE_BASE_NAME: {
     getter: string;
   };
@@ -593,8 +592,6 @@ export type AudioCommandStoreTypes = {
   COMMAND_MULTI_RESET_MORA_ONLYPITCH: {
     action(payload: { audioKeys: AudioKey[] }): void;
   };
-
-
 
   COMMAND_RESET_SELECTED_MORA_PITCH_AND_LENGTH: {
     action(payload: { audioKey: AudioKey; accentPhraseIndex: number }): void;

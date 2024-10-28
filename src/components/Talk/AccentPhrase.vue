@@ -5,10 +5,11 @@
     :class="[isActive && 'mora-table-focus', uiLocked || 'mora-table-hover']"
     @click="$emit('click', index)"
   >
-    <ContextMenu :menudata="contextMenudata" />
+    
     <!-- スライダーここから -->
     <!-- ｱｸｾﾝﾄ項目のスライダー -->
     <template v-if="selectedDetail === 'accent'">
+      <ContextMenu :menudata="contextMenudata_accent" />
       <AudioAccent
         :accentPhraseIndex="index"
         :accentPhrase
@@ -19,6 +20,7 @@
     </template>
     <!-- ｲﾝﾄﾈｰｼｮﾝ項目のスライダー -->
     <template v-if="selectedDetail === 'pitch'">
+      <ContextMenu :menudata="contextMenudata_pitch" />
       <div
         v-for="(mora, moraIndex) in accentPhrase.moras"
         :key="moraIndex"
@@ -42,6 +44,7 @@
     </template>
     <!-- 長さ項目のスライダー -->
     <template v-if="selectedDetail === 'length'">
+      <ContextMenu :menudata="contextMenudata_length" />
       <div
         v-for="(mora, moraIndex) in accentPhrase.moras"
         :key="moraIndex"
@@ -241,7 +244,7 @@ const store = useStore();
 
 const uiLocked = computed(() => store.getters.UI_LOCKED);
 
-const contextMenudata = computed<ContextMenuItemData[]>(() => {
+const contextMenudata_accent = computed<ContextMenuItemData[]>(() => {
   return [
     {
       type: "button",
@@ -258,27 +261,59 @@ const contextMenudata = computed<ContextMenuItemData[]>(() => {
       type: "button",
       label: "リセット",
       onClick: () => {
-        void store.actions.COMMAND_MULTI_RESET_MORA_PITCH_AND_LENGTH({
+        void store.actions.COMMAND_MULTI_RESET_MORA_ONLYPITCH({
           audioKeys: [props.audioKey],
         });
       },
       disableWhenUiLocked: true,
     },
+  ];
+});
+
+const contextMenudata_pitch = computed<ContextMenuItemData[]>(() => {
+  return [
     {
       type: "button",
-      label: "長さのみリセット",
+      label: "削除",
       onClick: () => {
-        void store.actions.COMMAND_MULTI_RESET_MORA_ONLYLENGTH({
-          audioKeys: [props.audioKey],
+        void store.actions.COMMAND_DELETE_ACCENT_PHRASE({
+          audioKey: props.audioKey,
+          accentPhraseIndex: props.index,
         });
       },
       disableWhenUiLocked: true,
     },
     {
       type: "button",
-      label: "ピッチのみリセット",
+      label: "リセット",
       onClick: () => {
         void store.actions.COMMAND_MULTI_RESET_MORA_ONLYPITCH({
+          audioKeys: [props.audioKey],
+        });
+      },
+      disableWhenUiLocked: true,
+    },
+  ];
+});
+
+const contextMenudata_length = computed<ContextMenuItemData[]>(() => {
+  return [
+    {
+      type: "button",
+      label: "削除",
+      onClick: () => {
+        void store.actions.COMMAND_DELETE_ACCENT_PHRASE({
+          audioKey: props.audioKey,
+          accentPhraseIndex: props.index,
+        });
+      },
+      disableWhenUiLocked: true,
+    },
+    {
+      type: "button",
+      label: "リセット",
+      onClick: () => {
+        void store.actions.COMMAND_MULTI_RESET_MORA_ONLYLENGTH({
           audioKeys: [props.audioKey],
         });
       },

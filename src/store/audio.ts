@@ -1221,8 +1221,8 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           styleId,
         });
       
-      for (let i:number=0; i < accentPhrases.length; ++i) {
-        for (let j:number=0; j < accentPhrases[i].moras.length; ++j){
+      for (let i : number = 0; i < accentPhrases.length; ++i) {
+        for (let j : number = 0; j < accentPhrases[i].moras.length; ++j){
           accentPhrases[i].moras[j].vowelLength = fetchedAccentPhrases[i].moras[j].vowelLength;
           accentPhrases[i].moras[j].consonantLength = fetchedAccentPhrases[i].moras[j].consonantLength;
         }
@@ -1251,8 +1251,8 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
           styleId,
         });
       
-      for (let i:number=0; i < accentPhrases.length; ++i) {
-        for (let j:number=0; j < accentPhrases[i].moras.length; ++j){
+      for (let i : number = 0; i < accentPhrases.length; ++i) {
+        for (let j : number = 0; j < accentPhrases[i].moras.length; ++j){
           accentPhrases[i].moras[j].pitch = fetchedAccentPhrases[i].moras[j].pitch;
         }
       }

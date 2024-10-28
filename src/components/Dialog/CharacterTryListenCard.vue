@@ -8,7 +8,7 @@
       isSelected && 'selected-character-item',
     ]"
     @click="
-      rollStyleIndex3(speakerUuid);
+      rollMode(speakerUuid);
       selectCharacter(speakerUuid);
       togglePlayOrStop(speakerUuid, selectedStyle, 0);
     "
@@ -98,7 +98,7 @@
           @mouseenter="isHoverableItem = false"
           @mouseleave="isHoverableItem = true"
           @click.stop="
-            rollStyleIndex3(speakerUuid);
+            rollMode(speakerUuid);
             selectCharacter(speakerUuid);
             togglePlayOrStop(speakerUuid, selectedStyle, voiceSampleIndex);
           "
@@ -136,7 +136,8 @@ const props = defineProps<{
 }>();
 
 watch(() => props.mode, (newMode, oldMode) => {
-  rollStyleIndex3(speakerUuid.value);
+  // selectCharacter(speakerUuid.value);
+  rollMode(speakerUuid.value);
 });
 
 
@@ -222,15 +223,8 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
   updatePortrait();
 };
 
-
-const rollStyleIndex2 = (characterInfos: CharacterInfo[]) => {
-  characterInfos.forEach((characterInfo) => {
-    const speakerUuid = characterInfo.metas.speakerUuid;
-    rollStyleIndex3(speakerUuid);
-  });
-};
-
-const rollStyleIndex3 = (speakerUuid: SpeakerId) => {
+// 必要に応じてmodeに合わせてスタイルを変更する関数
+const rollMode = (speakerUuid: SpeakerId) => {
   let styleIndex = 0;
   const length = props.characterInfo.metas.styles.length;
   if (props.mode == 0) {

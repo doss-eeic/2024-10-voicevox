@@ -264,6 +264,16 @@ const contextMenudata = computed<ContextMenuItemData[]>(() => {
       },
       disableWhenUiLocked: true,
     },
+    {
+      type: "button",
+      label: "長さのみリセット",
+      onClick: () => {
+        void store.actions.COMMAND_MULTI_RESET_MORA_ONLYLENGTH({
+          audioKeys: [props.audioKey],
+        });
+      },
+      disableWhenUiLocked: true,
+    },
   ];
 });
 

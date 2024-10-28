@@ -1201,6 +1201,36 @@ export const audioStore = createPartialStore<AudioStoreTypes>({
     },
   },
 
+  FETCH_AND_COPY_MORA_DATA_ONLYLENGTH: {
+    async action(
+      { actions },
+      {
+        accentPhrases,
+        engineId,
+        styleId,
+      }: {
+        accentPhrases: AccentPhrase[];
+        engineId: EngineId;
+        styleId: StyleId;
+      },
+    ) {
+      const fetchedAccentPhrases: AccentPhrase[] =
+        await actions.FETCH_MORA_DATA({
+          accentPhrases,
+          engineId,
+          styleId,
+        });
+      
+      for (let i:number=0; i < accentPhrases.length; ++i) {
+        for (let j:number=0; j < accentPhrases[i].moras.length; ++j){
+          accentPhrases[i].moras[j].vowelLength = fetchedAccentPhrases[i].moras[j].vowelLength;
+          accentPhrases[i].moras[j].consonantLength = fetchedAccentPhrases[i].moras[j].consonantLength;
+        }
+      }
+      return accentPhrases;
+    },
+  },
+
   DEFAULT_PROJECT_FILE_BASE_NAME: {
     getter: (state) => {
       const headItemText = state.audioItems[state.audioKeys[0]].text;
@@ -2481,6 +2511,29 @@ export const audioCommandStore = transformCommandStore(
           if (query == undefined) throw new Error("assert query != undefined");
 
           const newAccentPhrases = await actions.FETCH_MORA_DATA({
+            accentPhrases: query.accentPhrases,
+            engineId,
+            styleId,
+          });
+
+          mutations.COMMAND_CHANGE_ACCENT({
+            audioKey,
+            accentPhrases: newAccentPhrases,
+          });
+        }
+      },
+    },
+
+    COMMAND_MULTI_RESET_MORA_ONLYLENGTH: {
+      async action({ state, actions, mutations }, { audioKeys }) {
+        for (const audioKey of audioKeys) {
+          const engineId = state.audioItems[audioKey].voice.engineId;
+          const styleId = state.audioItems[audioKey].voice.styleId;
+
+          const query = state.audioItems[audioKey].query;
+          if (query == undefined) throw new Error("assert query != undefined");
+
+          const newAccentPhrases = await actions.FETCH_AND_COPY_MORA_DATA_ONLYLENGTH({
             accentPhrases: query.accentPhrases,
             engineId,
             styleId,

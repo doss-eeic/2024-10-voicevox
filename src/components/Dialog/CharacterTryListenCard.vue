@@ -201,7 +201,7 @@ const rollStyleIndex = (speakerUuid: SpeakerId, diff: number) => {
       }
       console.log("check2", styleIndex);
     } else {
-      if (styleIndex == -1) {
+      if (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
         styleIndex = length - 1;
       }
       while (!isSingingStyle(props.characterInfo.metas.styles[styleIndex])) {
